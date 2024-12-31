@@ -18,71 +18,72 @@ class LeagueController extends Controller
     public function show($code)
     {
         try {
-            // Önce API yanıtını kontrol edelim
-            $apiStandings = $this->footballApi->get("/competitions/{$code}/standings");
-            
-            // API yanıtını detaylı logla
-            Log::info('API Response Debug:', [
-                'code' => $code,
-                'raw_response' => $apiStandings
-            ]);
-
-            // Eğer API yanıtı boşsa veya hatalıysa, veritabanından çek
-            if (!$apiStandings) {
-                $standings = Standing::where('league_code', $code)
-                    ->orderBy('position')
-                    ->get();
-
-                if ($standings->isEmpty()) {
-                    throw new \Exception('Puan durumu bulunamadı');
-                }
-
-                return view('leagues.show', [
-                    'standings' => ['standings' => [['table' => $standings]]],
-                    'error' => 'API\'den veri alınamadı, mevcut veriler gösteriliyor'
-                ]);
+            // Lig bilgilerini çek
+            $league = $this->footballApi->get("/competitions/{$code}");
+            if (!$league) {
+                throw new \Exception('Lig bilgileri alınamadı');
             }
 
-            // API'den gelen veriyi işle
-            $standings = [];
-            if (isset($apiStandings['standings'])) {
-                foreach ($apiStandings['standings'] as $standing) {
-                    if (isset($standing['type']) && $standing['type'] === 'TOTAL') {
-                        foreach ($standing['table'] as $position) {
-                            $standings[] = Standing::updateOrCreate(
-                                [
-                                    'league_code' => $code,
-                                    'team_id' => $position['team']['id'] ?? ''
-                                ],
-                                [
-                                    'position' => $position['position'] ?? 0,
-                                    'team_name' => $position['team']['name'] ?? '',
-                                    'team_crest' => $position['team']['crest'] ?? '',
-                                    'played_games' => $position['playedGames'] ?? 0,
-                                    'won' => $position['won'] ?? 0,
-                                    'draw' => $position['draw'] ?? 0,
-                                    'lost' => $position['lost'] ?? 0,
-                                    'goals_for' => $position['goalsFor'] ?? 0,
-                                    'goals_against' => $position['goalsAgainst'] ?? 0,
-                                    'goal_difference' => $position['goalDifference'] ?? 0,
-                                    'points' => $position['points'] ?? 0,
-                                    'form' => ''  // Form bilgisini şimdilik boş bırakalım
-                                ]
-                            );
+            // Fikstürü çek
+            $matches = $this->footballApi->get("/competitions/{$code}/matches");
+            if (!$matches) {
+                throw new \Exception('Fikstür bilgileri alınamadı');
+            }
+
+            // Mevcut haftayı al
+            $currentMatchday = $league['currentSeason']['currentMatchday'] ?? 1;
+
+            // Son 2 haftanın maçlarını filtrele
+            $recentMatches = collect($matches['matches'] ?? [])
+                ->filter(function($match) use ($currentMatchday) {
+                    return $match['matchday'] >= ($currentMatchday - 2) && 
+                           $match['matchday'] <= $currentMatchday;
+                })
+                ->groupBy('matchday')
+                ->sortByDesc('matchday');
+
+            // Puan durumunu çek ve form bilgisini ekle
+            $standings = Standing::where('league_code', $code)
+                ->orderBy('position')
+                ->get()
+                ->map(function($standing) use ($matches) {
+                    // Son 5 maçı al
+                    $lastMatches = collect($matches['matches'])
+                        ->filter(function($match) use ($standing) {
+                            return ($match['homeTeam']['id'] == $standing->team_id || 
+                                    $match['awayTeam']['id'] == $standing->team_id) &&
+                                   $match['status'] === 'FINISHED';
+                        })
+                        ->sortByDesc('utcDate')
+                        ->take(5);
+
+                    // Form hesapla
+                    $form = '';
+                    foreach ($lastMatches as $match) {
+                        $isHome = $match['homeTeam']['id'] == $standing->team_id;
+                        $teamScore = $isHome ? $match['score']['fullTime']['home'] : $match['score']['fullTime']['away'];
+                        $opponentScore = $isHome ? $match['score']['fullTime']['away'] : $match['score']['fullTime']['home'];
+
+                        if ($teamScore > $opponentScore) {
+                            $form = 'W' . $form;
+                        } elseif ($teamScore < $opponentScore) {
+                            $form = 'L' . $form;
+                        } else {
+                            $form = 'D' . $form;
                         }
-                        break;
                     }
-                }
-            }
 
-            // Eğer veri işlenemediyse
-            if (empty($standings)) {
-                throw new \Exception('Puan durumu verisi işlenemedi');
-            }
+                    $standing->form = $form;
+                    return $standing;
+                });
 
+            // View'a gönder
             return view('leagues.show', [
+                'league' => $league,
+                'matches' => $matches,
+                'recentMatches' => $recentMatches,
                 'standings' => ['standings' => [['table' => $standings]]],
-                'currentMatchday' => 1
+                'currentMatchday' => $currentMatchday
             ]);
 
         } catch (\Exception $e) {
@@ -92,38 +93,5 @@ class LeagueController extends Controller
             ]);
             return back()->with('error', 'Lig bilgileri alınamadı: ' . $e->getMessage());
         }
-    }
-
-    private function calculateForm($matches, $teamId)
-    {
-        if (empty($matches)) {
-            return '';
-        }
-
-        $form = '';
-        $recentMatches = collect($matches)
-            ->filter(function($match) use ($teamId) {
-                return $match['status'] === 'FINISHED' && 
-                    ($match['homeTeam']['id'] === $teamId || 
-                     $match['awayTeam']['id'] === $teamId);
-            })
-            ->sortByDesc('utcDate')
-            ->take(5);
-
-        foreach ($recentMatches as $match) {
-            $isHome = $match['homeTeam']['id'] === $teamId;
-            $teamScore = $isHome ? $match['score']['fullTime']['home'] : $match['score']['fullTime']['away'];
-            $opponentScore = $isHome ? $match['score']['fullTime']['away'] : $match['score']['fullTime']['home'];
-            
-            if ($teamScore > $opponentScore) {
-                $form = 'W' . $form;
-            } elseif ($teamScore < $opponentScore) {
-                $form = 'L' . $form;
-            } else {
-                $form = 'D' . $form;
-            }
-        }
-
-        return $form;
     }
 } 
