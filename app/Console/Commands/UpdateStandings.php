@@ -21,31 +21,66 @@ class UpdateStandings extends Command
 
     public function handle()
     {
-        $leagues = ['PL', 'BL1', 'PD', 'SA', 'FL1'];
+        // Sidebardaki tüm ligler ve API kodları
+        $leagues = [
+            // Major Leagues
+            'PL'  => 'Premier League',     // İngiltere
+            'PD'  => 'La Liga',            // İspanya
+            'BL1' => 'Bundesliga',         // Almanya
+            'SA'  => 'Serie A',            // İtalya
+            'FL1' => 'Ligue 1',            // Fransa
+            
+            // Other Leagues
+            'ERE' => 'Eredivisie',         // Hollanda
+            'PPL' => 'Primeira Liga',      // Portekiz
+            'ELC' => 'Championship',       // İngiltere 2. Lig
+            'BSA' => 'Brasileirão',        // Brezilya
+            
+            // International
+            'CLI' => 'Copa Libertadores',  // Güney Amerika
+            'CL'  => 'Champions League',   // UEFA
+            'EC'  => 'European Championship', // EURO
+            'WC'  => 'World Cup'           // FIFA
+        ];
+
         $leagueArg = $this->argument('league');
 
         if ($leagueArg) {
-            $leagues = [$leagueArg];
+            $leagues = [$leagueArg => $leagues[$leagueArg] ?? ''];
         }
 
-        foreach ($leagues as $league) {
-            $this->info("Updating standings for {$league}...");
+        foreach ($leagues as $code => $name) {
+            $this->info("Updating standings for {$name} ({$code})...");
             
             try {
-                $standings = $this->footballApi->get("/competitions/{$league}/standings");
+                // Bazı ligler için özel endpoint kullanımı
+                $endpoint = "/competitions/{$code}/standings";
+                
+                // Eredivisie için özel kod düzeltmesi
+                if ($code === 'ERE') {
+                    $endpoint = "/competitions/DED/standings";
+                }
+                
+                // Brasileirao için özel kod düzeltmesi
+                if ($code === 'BSA') {
+                    $endpoint = "/competitions/BSA/standings?season=" . date('Y');
+                }
+
+                $standings = $this->footballApi->get($endpoint);
                 
                 if (!isset($standings['standings'][0]['table'])) {
-                    $this->error("No standings data found for {$league}");
+                    $this->error("No standings data found for {$name} ({$code})");
                     continue;
                 }
 
                 // Önce bu lig için eski verileri temizle
-                Standing::where('league_code', $league)->delete();
+                $dbCode = ($code === 'ERE') ? 'DED' : $code;
+                Standing::where('league_code', $dbCode)->delete();
 
                 // Yeni verileri ekle
                 foreach ($standings['standings'][0]['table'] as $position) {
                     Standing::create([
-                        'league_code' => $league,
+                        'league_code' => $dbCode,
                         'position' => $position['position'],
                         'team_id' => $position['team']['id'],
                         'team_name' => $position['team']['name'],
@@ -62,9 +97,16 @@ class UpdateStandings extends Command
                     ]);
                 }
 
-                $this->info("Standings updated for {$league}");
+                $this->info("Standings updated for {$name} ({$code})");
+                
+                // API rate limit'e takılmamak için her istek arasında biraz bekle
+                sleep(2);
+                
             } catch (\Exception $e) {
-                $this->error("Error updating {$league}: " . $e->getMessage());
+                $this->error("Error updating {$name} ({$code}): " . $e->getMessage());
+                // Hata durumunda da bekle
+                sleep(2);
+                continue;
             }
         }
     }

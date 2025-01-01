@@ -293,19 +293,19 @@
                             <tr class="border-b border-gray-700 hover:bg-gray-800 transition-colors cursor-pointer">
                                 <td class="py-2 px-2">{{ $position['position'] }}</td>
                                 <td class="py-2 px-2">
-                                    <a href="{{ route('team.show', ['teamId' => $position['team_id']]) }}" 
+                                    <a href="{{ route('team.show', ['teamId' => $position['team']['id']]) }}" 
                                        class="flex items-center space-x-2 hover:bg-gray-700 rounded px-2 py-1 transition-colors">
-                                        <img src="{{ $position['team_crest'] }}" alt="" class="w-4 h-4">
-                                        <span class="text-xs text-gray-200 hover:text-white">{{ $position['team_name'] }}</span>
+                                        <img src="{{ $position['team']['crest'] }}" alt="" class="w-4 h-4">
+                                        <span class="text-xs text-gray-200 hover:text-white">{{ $position['team']['name'] }}</span>
                                     </a>
                                 </td>
-                                <td class="text-center py-2 px-2 text-xs">{{ $position['played_games'] }}</td>
+                                <td class="text-center py-2 px-2 text-xs">{{ $position['playedGames'] }}</td>
                                 <td class="text-center py-2 px-2 text-xs">{{ $position['won'] }}</td>
                                 <td class="text-center py-2 px-2 text-xs">{{ $position['draw'] }}</td>
                                 <td class="text-center py-2 px-2 text-xs">{{ $position['lost'] }}</td>
-                                <td class="text-center py-2 px-2 text-xs">{{ $position['goals_for'] }}</td>
-                                <td class="text-center py-2 px-2 text-xs">{{ $position['goals_against'] }}</td>
-                                <td class="text-center py-2 px-2 text-xs">{{ $position['goal_difference'] }}</td>
+                                <td class="text-center py-2 px-2 text-xs">{{ $position['goalsFor'] }}</td>
+                                <td class="text-center py-2 px-2 text-xs">{{ $position['goalsAgainst'] }}</td>
+                                <td class="text-center py-2 px-2 text-xs">{{ $position['goalDifference'] }}</td>
                                 <td class="text-center py-2 px-2 text-xs font-bold">{{ $position['points'] }}</td>
                                 <td class="text-center py-2 px-2">
                                     <div class="flex items-center justify-center gap-[2px]">
