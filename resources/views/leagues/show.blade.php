@@ -11,6 +11,7 @@
                 <a href="#" class="tab-link text-gray-400 hover:text-white" data-tab="genel">GENEL</a>
                 <a href="#" class="tab-link text-gray-400 hover:text-white" data-tab="sonuclar">SONUÇLAR</a>
                 <a href="#" class="tab-link text-gray-400 hover:text-white" data-tab="fikstur">FİKSTÜR</a>
+                <a href="#" class="tab-link text-gray-400 hover:text-white" data-tab="oranlar">ORANLAR</a>
                 <a href="#" class="tab-link text-gray-400 hover:text-white" data-tab="puan-durumu">PUAN DURUMU</a>
                 <a href="#" class="tab-link text-gray-400 hover:text-white" data-tab="arsiv">ARŞİV</a>
             </div>
@@ -202,6 +203,68 @@
                                     </div>
                                 </div>
                             @endforeach
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Oranlar Tab -->
+        <div id="oranlar" class="tab-content hidden">
+            <div class="space-y-4">
+                @php
+                    $futureMatches = collect($matches['matches'])
+                        ->filter(function($match) {
+                            return $match['status'] === 'SCHEDULED' || $match['status'] === 'TIMED';
+                        })
+                        ->sortBy('utcDate');
+                @endphp
+
+                @foreach($futureMatches as $match)
+                    <div class="bg-[#1a1f2d] rounded-lg p-4">
+                        <!-- Tarih/Saat -->
+                        <div class="text-gray-400 text-sm mb-3">
+                            {{ \Carbon\Carbon::parse($match['utcDate'])
+                                ->timezone('Europe/Istanbul')
+                                ->format('d.m.Y H:i') }}
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <!-- Ev Sahibi -->
+                            <div class="flex items-center space-x-3 w-[35%]">
+                                <img src="{{ $match['homeTeam']['crest'] }}" alt="" class="w-6 h-6">
+                                <span class="text-white">{{ $match['homeTeam']['shortName'] ?? $match['homeTeam']['name'] }}</span>
+                            </div>
+
+                            <!-- Oranlar -->
+                            <div class="flex items-center space-x-4">
+                                <div class="flex flex-col items-center">
+                                    <span class="text-gray-400 text-xs mb-1">1</span>
+                                    <div class="bg-[#242938] px-4 py-2 rounded">
+                                        <span class="text-green-500 font-medium">{{ number_format(rand(150, 300) / 100, 2) }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col items-center">
+                                    <span class="text-gray-400 text-xs mb-1">X</span>
+                                    <div class="bg-[#242938] px-4 py-2 rounded">
+                                        <span class="text-yellow-500 font-medium">{{ number_format(rand(250, 400) / 100, 2) }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col items-center">
+                                    <span class="text-gray-400 text-xs mb-1">2</span>
+                                    <div class="bg-[#242938] px-4 py-2 rounded">
+                                        <span class="text-red-500 font-medium">{{ number_format(rand(150, 300) / 100, 2) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Deplasman -->
+                            <div class="flex items-center justify-end space-x-3 w-[35%]">
+                                <span class="text-white">{{ $match['awayTeam']['shortName'] ?? $match['awayTeam']['name'] }}</span>
+                                <img src="{{ $match['awayTeam']['crest'] }}" alt="" class="w-6 h-6">
+                            </div>
                         </div>
                     </div>
                 @endforeach

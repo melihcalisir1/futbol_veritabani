@@ -24,11 +24,20 @@ class LeagueController extends Controller
                 throw new \Exception('Lig bilgileri alınamadı');
             }
 
-            // Fikstürü çek
+            // Maçları çek
             $matches = $this->footballApi->get("/competitions/{$code}/matches");
-            if (!$matches) {
-                throw new \Exception('Fikstür bilgileri alınamadı');
-            }
+            
+            // Basit sabit oranlar ekle (test için)
+            $matches['matches'] = collect($matches['matches'])->map(function($match) {
+                if ($match['status'] === 'SCHEDULED') {
+                    $match['odds'] = [
+                        '1' => number_format(rand(150, 350) / 100, 2),
+                        'X' => number_format(rand(200, 400) / 100, 2),
+                        '2' => number_format(rand(150, 350) / 100, 2)
+                    ];
+                }
+                return $match;
+            })->all();
 
             // Mevcut haftayı al
             $currentMatchday = $league['currentSeason']['currentMatchday'] ?? 1;
