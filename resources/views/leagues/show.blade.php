@@ -45,9 +45,7 @@
                         <div class="space-y-1">
                             <div class="flex justify-between items-center mb-2">
                                 <h3 class="text-sm">{{ $matchday }}. MAÇ GÜNÜ</h3>
-                                @if($matchday == $currentMatchday)
-                                    <a href="#puan-durumu" class="text-blue-500 hover:underline text-xs">Puan Durumu</a>
-                                @endif
+                                
                             </div>
 
                             <!-- Maçlar -->
