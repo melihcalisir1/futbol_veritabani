@@ -7,21 +7,7 @@
     <!-- Üst Navigasyon -->
     <div class="border-b border-gray-800">
         <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex space-x-4">
-                    <a href="{{ route('matches.all') }}" 
-                       class="{{ request()->routeIs('matches.all') ? 'bg-red-600' : 'hover:bg-gray-800' }} px-4 py-2 rounded">
-                        ALL
-                    </a>
-                    <a href="{{ route('matches.odds') }}"
-                       class="{{ request()->routeIs('matches.odds') ? 'bg-red-600' : 'hover:bg-gray-800' }} px-4 py-2 rounded">
-                        ODDS
-                    </a>
-                    <a href="{{ route('matches.finished') }}"
-                       class="{{ request()->routeIs('matches.finished') ? 'bg-red-600' : 'hover:bg-gray-800' }} px-4 py-2 rounded">
-                        FINISHED
-                    </a>
-                </div>
+            <div class="flex justify-end items-center py-4">
                 <div class="flex items-center space-x-2">
                     <a href="?date={{ $currentDate->copy()->subDay()->format('Y-m-d') }}" 
                        class="text-gray-400 hover:text-white">&lt;</a>
