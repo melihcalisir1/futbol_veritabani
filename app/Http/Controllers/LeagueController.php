@@ -24,56 +24,74 @@ class LeagueController extends Controller
                 throw new \Exception('Lig bilgileri alınamadı');
             }
 
-            // Sezonları filtrele ve sırala (1989'dan sonrası)
+            // Sezonları filtrele ve sırala (2000'den sonrası)
             if (isset($league['seasons'])) {
                 $league['seasons'] = collect($league['seasons'])
                     ->filter(function($season) {
-                        return (int)substr($season['startDate'], 0, 4) >= 1989;
+                        return (int)substr($season['startDate'], 0, 4) >= 2000;
                     })
-                    ->map(function($season) {
-                        // Eğer winner bilgisi yoksa manuel ekleyelim
+                    ->map(function($season) use ($code) {
                         if (!isset($season['winner'])) {
                             $startYear = substr($season['startDate'], 0, 4);
+                            
                             $winners = [
-                                '2023' => ['name' => 'Bayer 04 Leverkusen', 'crest' => 'https://crests.football-data.org/3.png'],
-                                '2022' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2021' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2020' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2019' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2018' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2017' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2016' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2015' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2014' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2013' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2012' => ['name' => 'Borussia Dortmund', 'crest' => 'https://crests.football-data.org/4.png'],
-                                '2011' => ['name' => 'Borussia Dortmund', 'crest' => 'https://crests.football-data.org/4.png'],
-                                '2010' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2009' => ['name' => 'VfL Wolfsburg', 'crest' => 'https://crests.football-data.org/11.png'],
-                                '2008' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2007' => ['name' => 'VfB Stuttgart', 'crest' => 'https://crests.football-data.org/10.png'],
-                                '2006' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2005' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2004' => ['name' => 'Werder Bremen', 'crest' => 'https://crests.football-data.org/12.png'],
-                                '2003' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2002' => ['name' => 'Borussia Dortmund', 'crest' => 'https://crests.football-data.org/4.png'],
-                                '2001' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '2000' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '1999' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '1998' => ['name' => 'Kaiserslautern', 'crest' => '/images/leagues/default-team.png'],
-                                '1997' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '1996' => ['name' => 'Borussia Dortmund', 'crest' => 'https://crests.football-data.org/4.png'],
-                                '1995' => ['name' => 'Borussia Dortmund', 'crest' => 'https://crests.football-data.org/4.png'],
-                                '1994' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '1993' => ['name' => 'Werder Bremen', 'crest' => 'https://crests.football-data.org/12.png'],
-                                '1992' => ['name' => 'VfB Stuttgart', 'crest' => 'https://crests.football-data.org/10.png'],
-                                '1991' => ['name' => 'Kaiserslautern', 'crest' => '/images/leagues/default-team.png'],
-                                '1990' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
-                                '1989' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                'PL' => [ // Premier League
+                                    '2023' => ['name' => 'Manchester City FC', 'crest' => 'https://crests.football-data.org/65.png'],
+                                    '2022' => ['name' => 'Manchester City FC', 'crest' => 'https://crests.football-data.org/65.png'],
+                                    '2021' => ['name' => 'Manchester City FC', 'crest' => 'https://crests.football-data.org/65.png'],
+                                    '2020' => ['name' => 'Manchester City FC', 'crest' => 'https://crests.football-data.org/65.png'],
+                                    '2019' => ['name' => 'Liverpool FC', 'crest' => 'https://crests.football-data.org/64.png'],
+                                    '2018' => ['name' => 'Manchester City FC', 'crest' => 'https://crests.football-data.org/65.png'],
+                                    '2017' => ['name' => 'Chelsea FC', 'crest' => 'https://crests.football-data.org/61.png'],
+                                    '2016' => ['name' => 'Leicester City FC', 'crest' => 'https://crests.football-data.org/338.png'],
+                                    '2015' => ['name' => 'Chelsea FC', 'crest' => 'https://crests.football-data.org/61.png'],
+                                    '2014' => ['name' => 'Manchester City FC', 'crest' => 'https://crests.football-data.org/65.png'],
+                                    '2013' => ['name' => 'Manchester United FC', 'crest' => 'https://crests.football-data.org/66.png'],
+                                    '2012' => ['name' => 'Manchester City FC', 'crest' => 'https://crests.football-data.org/65.png'],
+                                    '2011' => ['name' => 'Manchester United FC', 'crest' => 'https://crests.football-data.org/66.png'],
+                                    '2010' => ['name' => 'Chelsea FC', 'crest' => 'https://crests.football-data.org/61.png'],
+                                    '2009' => ['name' => 'Manchester United FC', 'crest' => 'https://crests.football-data.org/66.png'],
+                                    '2008' => ['name' => 'Manchester United FC', 'crest' => 'https://crests.football-data.org/66.png'],
+                                    '2007' => ['name' => 'Manchester United FC', 'crest' => 'https://crests.football-data.org/66.png'],
+                                    '2006' => ['name' => 'Chelsea FC', 'crest' => 'https://crests.football-data.org/61.png'],
+                                    '2005' => ['name' => 'Chelsea FC', 'crest' => 'https://crests.football-data.org/61.png'],
+                                    '2004' => ['name' => 'Arsenal FC', 'crest' => 'https://crests.football-data.org/57.png'],
+                                    '2003' => ['name' => 'Manchester United FC', 'crest' => 'https://crests.football-data.org/66.png'],
+                                    '2002' => ['name' => 'Arsenal FC', 'crest' => 'https://crests.football-data.org/57.png'],
+                                    '2001' => ['name' => 'Manchester United FC', 'crest' => 'https://crests.football-data.org/66.png'],
+                                    '2000' => ['name' => 'Manchester United FC', 'crest' => 'https://crests.football-data.org/66.png'],
+                                ],
+                                'BL1' => [ // Bundesliga
+                                    '2023' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2022' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2021' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2020' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2019' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2018' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2017' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2016' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2015' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2014' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2013' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2012' => ['name' => 'Borussia Dortmund', 'crest' => 'https://crests.football-data.org/4.png'],
+                                    '2011' => ['name' => 'Borussia Dortmund', 'crest' => 'https://crests.football-data.org/4.png'],
+                                    '2010' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2009' => ['name' => 'VfL Wolfsburg', 'crest' => 'https://crests.football-data.org/11.png'],
+                                    '2008' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2007' => ['name' => 'VfB Stuttgart', 'crest' => 'https://crests.football-data.org/10.png'],
+                                    '2006' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2005' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2004' => ['name' => 'Werder Bremen', 'crest' => 'https://crests.football-data.org/12.png'],
+                                    '2003' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2002' => ['name' => 'Borussia Dortmund', 'crest' => 'https://crests.football-data.org/4.png'],
+                                    '2001' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                    '2000' => ['name' => 'Bayern München', 'crest' => 'https://crests.football-data.org/5.png'],
+                                ],
+                                // Diğer ligler için benzer şekilde devam edebilirsiniz...
                             ];
 
-                            if (isset($winners[$startYear])) {
-                                $season['winner'] = $winners[$startYear];
+                            if (isset($winners[$code][$startYear])) {
+                                $season['winner'] = $winners[$code][$startYear];
                             }
                         }
                         return $season;
@@ -110,40 +128,10 @@ class LeagueController extends Controller
                 ->groupBy('matchday')
                 ->sortByDesc('matchday');
 
-            // Puan durumunu çek ve form bilgisini ekle
+            // Puan durumunu veritabanından çek
             $standings = Standing::where('league_code', $code)
                 ->orderBy('position')
-                ->get()
-                ->map(function($standing) use ($matches) {
-                    // Son 5 maçı al
-                    $lastMatches = collect($matches['matches'])
-                        ->filter(function($match) use ($standing) {
-                            return ($match['homeTeam']['id'] == $standing->team_id || 
-                                    $match['awayTeam']['id'] == $standing->team_id) &&
-                                   $match['status'] === 'FINISHED';
-                        })
-                        ->sortByDesc('utcDate')
-                        ->take(5);
-
-                    // Form hesapla
-                    $form = '';
-                    foreach ($lastMatches as $match) {
-                        $isHome = $match['homeTeam']['id'] == $standing->team_id;
-                        $teamScore = $isHome ? $match['score']['fullTime']['home'] : $match['score']['fullTime']['away'];
-                        $opponentScore = $isHome ? $match['score']['fullTime']['away'] : $match['score']['fullTime']['home'];
-
-                        if ($teamScore > $opponentScore) {
-                            $form = 'W' . $form;
-                        } elseif ($teamScore < $opponentScore) {
-                            $form = 'L' . $form;
-                        } else {
-                            $form = 'D' . $form;
-                        }
-                    }
-
-                    $standing->form = $form;
-                    return $standing;
-                });
+                ->get();
 
             // View'a gönder
             return view('leagues.show', [

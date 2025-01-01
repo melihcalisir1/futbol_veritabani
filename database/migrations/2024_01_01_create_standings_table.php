@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('standings', function (Blueprint $table) {
             $table->id();
-            $table->string('league_code'); // PL, BL1, etc.
+            $table->string('league_code');
             $table->integer('position');
-            $table->string('team_id');
+            $table->integer('team_id');
             $table->string('team_name');
             $table->string('team_crest');
             $table->integer('played_games');
@@ -25,9 +25,10 @@ return new class extends Migration
             $table->integer('points');
             $table->string('form')->nullable();
             $table->timestamps();
-
-            // Composite index
-            $table->unique(['league_code', 'team_id']);
+            
+            // İndexler
+            $table->index('league_code');
+            $table->index('team_id');
         });
     }
 
@@ -35,4 +36,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('standings');
     }
-};
+}; 
