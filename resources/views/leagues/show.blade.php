@@ -331,6 +331,50 @@
                 </table>
             </div>
         </div>
+
+        <!-- Arşiv Tab -->
+        <div id="arsiv" class="tab-content hidden">
+            <div class="container mx-auto max-w-4xl">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-gray-800">
+                            <th class="text-left py-4 px-6 text-sm font-semibold text-gray-400 w-1/2">SEZON</th>
+                            <th class="text-left py-4 px-6 text-sm font-semibold text-gray-400 w-1/2">ŞAMPİYON</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($league['seasons'] ?? [] as $season)
+                            <tr class="hover:bg-[#1a1f2d] transition-colors border-b border-gray-800/50">
+                                <!-- Sezon -->
+                                <td class="py-4 px-6">
+                                    <span class="text-sm text-white">
+                                        {{ $league['name'] }} {{ substr($season['startDate'], 0, 4) }}/{{ substr($season['endDate'], 0, 4) }}
+                                    </span>
+                                </td>
+
+                                <!-- Şampiyon -->
+                                <td class="py-4 px-6">
+                                    @if(isset($season['winner']))
+                                        <div class="flex items-center space-x-3">
+                                            <img src="{{ $season['winner']['crest'] }}" 
+                                                 alt="{{ $season['winner']['name'] }}" 
+                                                 class="w-4 h-4 object-contain">
+                                            <span class="text-sm text-white">{{ $season['winner']['name'] }}</span>
+                                        </div>
+                                    @else
+                                        @if(substr($season['endDate'], 0, 4) > date('Y'))
+                                            <span class="text-sm text-gray-500">-</span>
+                                        @else
+                                            <span class="text-sm text-gray-500">-</span>
+                                        @endif
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
