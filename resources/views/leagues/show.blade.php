@@ -157,6 +157,57 @@
             @endforeach
         </div>
 
+        <!-- Fikstür Tab -->
+        <div id="fikstur" class="tab-content hidden">
+            <div class="space-y-4">
+                @php
+                    $futureMatches = collect($matches['matches'])
+                        ->filter(function($match) {
+                            return $match['status'] === 'SCHEDULED' || $match['status'] === 'TIMED';
+                        })
+                        ->groupBy('matchday')
+                        ->sortBy('matchday');
+                @endphp
+
+                @foreach($futureMatches as $matchday => $dayMatches)
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-white mb-4 border-b border-gray-800 pb-2">{{ $matchday }}. Hafta</h3>
+                        <div class="space-y-3">
+                            @foreach($dayMatches->sortBy('utcDate') as $match)
+                                <div class="bg-[#1a1f2d] rounded-lg p-4 hover:bg-[#242938] transition-colors">
+                                    <div class="flex items-center justify-between">
+                                        <!-- Tarih ve Saat -->
+                                        <div class="text-gray-400 text-xs w-20">
+                                            {{ \Carbon\Carbon::parse($match['utcDate'])
+                                                ->timezone('Europe/Istanbul')
+                                                ->format('d.m.Y H:i') }}
+                                        </div>
+
+                                        <!-- Ev Sahibi -->
+                                        <div class="flex items-center justify-end space-x-3 w-[35%]">
+                                            <span class="text-white text-sm">{{ $match['homeTeam']['shortName'] ?? $match['homeTeam']['name'] }}</span>
+                                            <img src="{{ $match['homeTeam']['crest'] }}" alt="" class="w-6 h-6 object-contain">
+                                        </div>
+
+                                        <!-- vs -->
+                                        <div class="flex items-center justify-center w-[90px] px-4">
+                                            <span class="text-gray-500 text-sm">vs</span>
+                                        </div>
+
+                                        <!-- Deplasman -->
+                                        <div class="flex items-center space-x-3 w-[35%]">
+                                            <img src="{{ $match['awayTeam']['crest'] }}" alt="" class="w-6 h-6 object-contain">
+                                            <span class="text-white text-sm">{{ $match['awayTeam']['shortName'] ?? $match['awayTeam']['name'] }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
         <!-- Puan Durumu Tab -->
         <div id="puan-durumu" class="tab-content hidden">
             <div class="overflow-x-auto">
