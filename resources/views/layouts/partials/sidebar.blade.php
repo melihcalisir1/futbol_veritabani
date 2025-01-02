@@ -53,11 +53,7 @@
                         <img src="https://media.api-sports.io/football/leagues/40.png" alt="Championship" class="w-6 h-6 mr-3">
                         Championship
                     </a>
-                    <a href="{{ route('league.show', 'BSA') }}" 
-                       class="flex items-center p-2 rounded {{ request()->route('code') === 'BSA' ? 'bg-red-600 text-white font-bold border-l-4 border-red-500' : 'text-white hover:bg-gray-800' }}">
-                        <img src="https://media.api-sports.io/football/leagues/71.png" alt="Brasileirão" class="w-6 h-6 mr-3">
-                        Brasileirão
-                    </a>
+                    
                 </div>
             </div>
 
