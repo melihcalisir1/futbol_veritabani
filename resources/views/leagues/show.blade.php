@@ -4,6 +4,18 @@
 
 @section('content')
 <div class="bg-gray-900 text-white min-h-screen">
+    <!-- Geri Butonu -->
+    <div class="container mx-auto px-4 py-2">
+        <div class="flex justify-end">
+            <a href="/" class="text-gray-400 hover:text-white flex items-center space-x-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                </svg>
+                <span>Geri</span>
+            </a>
+        </div>
+    </div>
+
     <!-- Sekmeler -->
     <div class="border-b border-gray-800">
         <div class="container mx-auto px-4">
