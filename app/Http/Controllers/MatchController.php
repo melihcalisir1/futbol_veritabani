@@ -18,17 +18,27 @@ class MatchController extends Controller
     public function index()
     {
         try {
-            $date = request('date', now()->format('Y-m-d'));
+            Carbon::setLocale('tr');
+            date_default_timezone_set('Europe/Istanbul');
             
-            if (!request('date')) {
-                $startDate = now()->format('Y-m-d');
-                $endDate = now()->addDays(7)->format('Y-m-d');
-                $matches = $this->footballApi->get("/matches?dateFrom={$startDate}&dateTo={$endDate}");
-            } else {
-                $matches = $this->footballApi->getMatchesByDate($date);
-            }
+            $date = request('date', now()->format('Y-m-d'));
+            $currentDate = Carbon::parse($date);
+            
+            $matches = $this->footballApi->getMatchesByDate($date);
 
             $matchesByLeague = collect($matches['matches'] ?? [])
+                ->map(function ($match) {
+                    $utcDate = Carbon::parse($match['utcDate']);
+                    $match['utcDate'] = $utcDate->setTimezone('Europe/Istanbul');
+                    
+                    $match['homeTeam']['displayName'] = $match['homeTeam']['shortName'] ?? $match['homeTeam']['name'];
+                    $match['awayTeam']['displayName'] = $match['awayTeam']['shortName'] ?? $match['awayTeam']['name'];
+                    
+                    return $match;
+                })
+                ->filter(function ($match) use ($date) {
+                    return $match['utcDate']->format('Y-m-d') === $date;
+                })
                 ->groupBy('competition.name')
                 ->sortBy(function ($matches, $leagueName) {
                     $order = [
@@ -43,7 +53,7 @@ class MatchController extends Controller
 
             return view('matches.index', [
                 'matchesByLeague' => $matchesByLeague,
-                'currentDate' => Carbon::parse($date)
+                'currentDate' => $currentDate
             ]);
         } catch (\Exception $e) {
             Log::error('Error in index', ['error' => $e->getMessage()]);
