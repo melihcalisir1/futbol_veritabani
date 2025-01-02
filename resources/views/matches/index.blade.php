@@ -10,17 +10,7 @@
             <div class="flex justify-between items-center py-4">
                 <!-- Tarih Seçici -->
                 <div class="flex items-center space-x-4">
-                    <a href="?date={{ $currentDate->copy()->subDay()->format('Y-m-d') }}" 
-                       class="text-gray-400 hover:text-white">
-                        <span class="text-sm">{{ $currentDate->copy()->subDay()->isoFormat('D MMMM dddd') }}</span>
-                    </a>
-                    <span class="bg-gray-800 px-4 py-2 rounded font-medium">
-                        {{ $currentDate->isoFormat('D MMMM dddd') }}
-                    </span>
-                    <a href="?date={{ $currentDate->copy()->addDay()->format('Y-m-d') }}" 
-                       class="text-gray-400 hover:text-white">
-                        <span class="text-sm">{{ $currentDate->copy()->addDay()->isoFormat('D MMMM dddd') }}</span>
-                    </a>
+                    <input type="text" id="datePicker" class="bg-gray-800 text-white px-4 py-2 rounded cursor-pointer text-center" value="{{ $currentDate->format('Y-m-d') }}" readonly>
                 </div>
             </div>
         </div>
@@ -78,4 +68,23 @@
         @endforelse
     </div>
 </div>
-@endsection 
+@endsection
+
+@push('scripts')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/tr.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    flatpickr("#datePicker", {
+        dateFormat: "Y-m-d",
+        locale: "tr",
+        theme: "dark",
+        onChange: function(selectedDates, dateStr, instance) {
+            window.location.href = `?date=${dateStr}`;
+        }
+    });
+});
+</script>
+@endpush 
