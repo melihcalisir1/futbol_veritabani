@@ -44,11 +44,11 @@
                 </div>
 
                 @foreach($leagueMatches->sortBy('utcDate') as $match)
-                    <div class="hover:bg-gray-800 group">
-                        <div class="flex items-center justify-between px-4 py-3">
+                    <div class="hover:bg-gray-800 group py-2">
+                        <div class="flex items-center">
                             <!-- Sol Taraf: Saat ve Ev Sahibi -->
-                            <div class="flex items-center space-x-8">
-                                <div class="text-gray-500 w-16 text-sm">
+                            <div class="flex items-center flex-1">
+                                <div class="text-gray-500 text-sm w-16 px-4">
                                     {{ $match['utcDate']->format('H:i') }}
                                 </div>
                                 <div class="flex items-center space-x-2">
@@ -58,12 +58,12 @@
                             </div>
 
                             <!-- Orta: vs -->
-                            <div class="text-center font-medium text-gray-500">
+                            <div class="w-20 text-center font-medium text-gray-500">
                                 vs
                             </div>
 
                             <!-- Sağ Taraf: Deplasman -->
-                            <div class="flex items-center space-x-2">
+                            <div class="flex items-center space-x-2 flex-1 justify-end px-4">
                                 <span class="text-white">{{ $match['awayTeam']['displayName'] }}</span>
                                 <img src="{{ $match['awayTeam']['crest'] }}" alt="" class="w-6 h-6">
                             </div>
