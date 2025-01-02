@@ -251,21 +251,21 @@
                                 <div class="flex flex-col items-center">
                                     <span class="text-gray-400 text-xs mb-1">1</span>
                                     <div class="bg-[#242938] px-4 py-2 rounded">
-                                        <span class="text-green-500 font-medium">{{ number_format(rand(150, 300) / 100, 2) }}</span>
+                                        <span class="text-green-500 font-medium">{{ isset($matchOdds[$match['id']]) ? $matchOdds[$match['id']]->home_win_odds : '-' }}</span>
                                     </div>
                                 </div>
 
                                 <div class="flex flex-col items-center">
                                     <span class="text-gray-400 text-xs mb-1">X</span>
                                     <div class="bg-[#242938] px-4 py-2 rounded">
-                                        <span class="text-yellow-500 font-medium">{{ number_format(rand(250, 400) / 100, 2) }}</span>
+                                        <span class="text-yellow-500 font-medium">{{ isset($matchOdds[$match['id']]) ? $matchOdds[$match['id']]->draw_odds : '-' }}</span>
                                     </div>
                                 </div>
 
                                 <div class="flex flex-col items-center">
                                     <span class="text-gray-400 text-xs mb-1">2</span>
                                     <div class="bg-[#242938] px-4 py-2 rounded">
-                                        <span class="text-red-500 font-medium">{{ number_format(rand(150, 300) / 100, 2) }}</span>
+                                        <span class="text-red-500 font-medium">{{ isset($matchOdds[$match['id']]) ? $matchOdds[$match['id']]->away_win_odds : '-' }}</span>
                                     </div>
                                 </div>
                             </div>

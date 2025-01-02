@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Models\Odds;
 
 class FootballApiService
 {
@@ -159,5 +160,18 @@ class FootballApiService
     {
         $today = Carbon::now()->format('Y-m-d');
         return $this->get("/matches?dateFrom={$today}&dateTo={$today}");
+    }
+
+    public function saveOdds($matchId, $homeOdds, $drawOdds, $awayOdds, $matchDate)
+    {
+        return Odds::updateOrCreate(
+            ['match_id' => $matchId],
+            [
+                'home_win_odds' => $homeOdds,
+                'draw_odds' => $drawOdds,
+                'away_win_odds' => $awayOdds,
+                'match_date' => $matchDate
+            ]
+        );
     }
 } 
